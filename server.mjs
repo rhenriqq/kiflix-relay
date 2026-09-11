@@ -16,3 +16,5 @@ const server=http.createServer(async(req,res)=>{if(req.url==='/health'&&req.meth
 server.requestTimeout=30000;server.headersTimeout=10000;server.listen(port,'0.0.0.0',()=>console.log('Relay de mídia iniciado na porta '+port));
 
 server.on('request',(req)=>console.log('relay_request',req.method,req.url));
+
+server.on('request',(req,res)=>res.on('finish',()=>console.log('relay_response',res.statusCode)));
