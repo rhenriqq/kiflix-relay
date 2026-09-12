@@ -5,7 +5,7 @@ import dns from 'node:dns/promises';
 import {timingSafeEqual} from 'node:crypto';
 const secret=process.env.RELAY_KEY,port=Number(process.env.PORT||8080);
 if(!secret||secret.length<32)throw Error('Configure RELAY_KEY com pelo menos 32 caracteres.');
-const allowedHosts=(process.env.ALLOWED_HOSTS||'hmns.top,*.hmns.top,iptvmais.one,limitv.me,*.limitv.me').split(',').map(x=>x.trim().toLowerCase()).filter(Boolean);
+const allowedHosts=(process.env.ALLOWED_HOSTS||'hmns.top,*.hmns.top,iptvmais.one,limitv.me,*.limitv.me,dns.playerli.me').split(',').map(x=>x.trim().toLowerCase()).filter(Boolean);
 function publicIP(ip){const a=ip.split('.').map(Number);return a.length===4&&a.every(x=>Number.isInteger(x)&&x>=0&&x<=255)&&a[0]>0&&a[0]<224&&a[0]!==10&&a[0]!==127&&!(a[0]===169&&a[1]===254)&&!(a[0]===172&&a[1]>=16&&a[1]<=31)&&!(a[0]===192&&a[1]===168)&&!(a[0]===100&&a[1]>=64&&a[1]<=127)&&!(a[0]===198&&(a[1]===18||a[1]===19))}
 function authenticated(req){const b=Buffer.from(req.headers.authorization||''),a=Buffer.from('Bearer '+secret);return a.length===b.length&&timingSafeEqual(a,b)}
 async function check(url){if(!['http:','https:'].includes(url.protocol)||url.username||url.password||!['','80','443'].includes(url.port))throw Error('Destino inválido');const host=url.hostname;if(!publicIP(host)&&!allowedHosts.some(x=>x.startsWith('*.')?host.endsWith(x.slice(1)):host===x))throw Error('Destino não permitido');const addresses=await dns.lookup(host,{all:true,family:4});if(!addresses.length||addresses.some(x=>!publicIP(x.address)))throw Error('Destino privado');return addresses[0].address}
