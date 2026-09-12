@@ -14,3 +14,10 @@ const cors={'Access-Control-Allow-Origin':'*','Access-Control-Allow-Methods':'GE
  const headers={...cors,'Cache-Control':'no-store','X-Kiflix-Final-URL':Buffer.from(url.href).toString('base64')};for(const name of ['content-type','content-length','content-range','accept-ranges'])if(upstream.headers[name])headers[name]=upstream.headers[name];res.writeHead(upstream.statusCode,headers);res.on('close',()=>upstream.destroy());upstream.on('error',()=>res.destroy());upstream.pipe(res);return}throw Error('Redirecionamentos excessivos');
  }catch{outgoing?.destroy();if(!res.headersSent)res.writeHead(502,{...cors,'Content-Type':'application/json'});res.end('{"error":"Não foi possível acessar a origem de mídia."}')}});
 server.requestTimeout=30000;server.headersTimeout=10000;server.listen(port,'0.0.0.0',()=>console.log('Relay de mídia iniciado na porta '+port));
+
+
+
+
+
+
+
